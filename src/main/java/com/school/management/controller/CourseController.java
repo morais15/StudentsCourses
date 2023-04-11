@@ -1,5 +1,7 @@
-package com.school.management.rest;
+package com.school.management.controller;
 
+import com.school.management.service.CourseService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -8,9 +10,10 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/courses")
 public class CourseController {
-
+    private final CourseService courseService;
 
     /**
      * GET methods (retrieving info)

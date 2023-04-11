@@ -1,7 +1,8 @@
-package com.school.management.rest;
+package com.school.management.controller;
 
 import com.school.management.model.dto.StudentDto;
 import com.school.management.service.StudentService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -11,13 +12,9 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/students")
+@RequiredArgsConstructor
 public class StudentController {
-
     private final StudentService studentService;
-
-    public StudentController(StudentService studentService) {
-        this.studentService = studentService;
-    }
 
     /**
      * GET methods (retrieving info)

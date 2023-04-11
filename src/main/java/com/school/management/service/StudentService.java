@@ -38,7 +38,7 @@ public class StudentService {
         Student student = studentRepository.findById(studentDto.getId()).orElseThrow(() -> new ResponseStatusException(
                 HttpStatus.NOT_FOUND, "Student not found."));
 
-        Boolean updated = false;
+        boolean updated = false;
         if (studentDto.getName() != null && !studentDto.getName().isBlank() && !studentDto.getName().equals(student.getName())) {
             student.setName(studentDto.getName());
             updated = true;
@@ -63,13 +63,15 @@ public class StudentService {
         }
 
         Timestamp ts = Timestamp.from(Instant.now());
-        List<Student> l = studentRepository.saveAll(studentsDto.stream()
+        List<Student> l = studentRepository.saveAll(studentsDto
+                .stream()
                 .filter(s -> s.getName() != null && !s.getName().isBlank() && s.getAddress() != null && !s.getAddress().isBlank())
-                .map(studentDto -> new Student(studentDto.getName(),
+                .map(studentDto -> new Student(null,
+                        studentDto.getName(),
                         studentDto.getAddress(),
                         ts,
                         ts))
-                .collect(Collectors.toList()));
+                .toList());
 
         return l.stream()
                 .map(student -> new StudentDto(student.getId(),
