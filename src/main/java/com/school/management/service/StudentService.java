@@ -2,7 +2,6 @@ package com.school.management.service;
 
 
 import com.school.management.model.Student;
-import com.school.management.model.dto.StudentDto;
 import com.school.management.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,38 +12,33 @@ import org.springframework.web.server.ResponseStatusException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class StudentService {
     private final StudentRepository studentRepository;
 
-    public List<StudentDto> getStudents() {
-        return studentRepository.findAll().stream()
-                .map(student -> new StudentDto(student.getId(), student.getName(), student.getAddress(), student.getCreatedAt(), student.getUpdatedAt()))
-                .collect(Collectors.toList());
+    public List<Student> getStudents() {
+        return studentRepository.findAll();
     }
 
-    public StudentDto getStudent(Long id) {
-        return studentRepository.findById(id)
-                .map(student -> new StudentDto(student.getId(), student.getName(), student.getAddress(), student.getCreatedAt(), student.getUpdatedAt()))
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Student not found."));
+    public Student getStudent(Long id) {
+        return studentRepository
+                .findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Student not found."));
     }
 
     @Transactional
-    public StudentDto updateStudent(StudentDto studentDto) {
-        Student student = studentRepository.findById(studentDto.getId()).orElseThrow(() -> new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "Student not found."));
+    public Student updateStudent(Student newStudent) {
+        Student student = this.getStudent(newStudent.getId());
 
         boolean updated = false;
-        if (studentDto.getName() != null && !studentDto.getName().isBlank() && !studentDto.getName().equals(student.getName())) {
-            student.setName(studentDto.getName());
+        if (newStudent.getName() != null && !newStudent.getName().isBlank() && !newStudent.getName().equals(student.getName())) {
+            student.setName(newStudent.getName());
             updated = true;
         }
-        if (studentDto.getAddress() != null && !studentDto.getAddress().isBlank() && !studentDto.getAddress().equals(student.getAddress())) {
-            student.setAddress(studentDto.getAddress());
+        if (newStudent.getAddress() != null && !newStudent.getAddress().isBlank() && !newStudent.getAddress().equals(student.getAddress())) {
+            student.setAddress(newStudent.getAddress());
             updated = true;
         }
 
@@ -52,34 +46,23 @@ public class StudentService {
             student.setUpdatedAt(Timestamp.from(Instant.now()));
             student = studentRepository.save(student);
         }
-
-        return new StudentDto(student.getId(), student.getName(), student.getAddress(), student.getCreatedAt(), student.getUpdatedAt());
+        return student;
     }
 
-    public List<StudentDto> createStudents(List<StudentDto> studentsDto) {
-        if (studentsDto.size() > 50) {
+    public List<Student> createStudents(List<Student> students) {
+        if (students.size() > 50) {
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN, "A request can not contain more than 50 students.");
         }
 
         Timestamp ts = Timestamp.from(Instant.now());
-        List<Student> l = studentRepository.saveAll(studentsDto
-                .stream()
-                .filter(s -> s.getName() != null && !s.getName().isBlank() && s.getAddress() != null && !s.getAddress().isBlank())
-                .map(studentDto -> new Student(null,
-                        studentDto.getName(),
-                        studentDto.getAddress(),
-                        ts,
-                        ts))
-                .toList());
-
-        return l.stream()
-                .map(student -> new StudentDto(student.getId(),
-                        student.getName(),
-                        student.getAddress(),
-                        student.getCreatedAt(),
-                        student.getUpdatedAt()))
-                .collect(Collectors.toList());
+        return studentRepository
+                .saveAll(
+                        students
+                                .stream()
+                                .filter(s -> s.getName() != null && !s.getName().isBlank() && s.getAddress() != null && !s.getAddress().isBlank())
+                                .toList()
+                );
     }
 
     @Transactional

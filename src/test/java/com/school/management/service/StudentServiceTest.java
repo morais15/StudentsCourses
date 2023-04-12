@@ -1,6 +1,6 @@
 package com.school.management.service;
 
-import com.school.management.model.dto.StudentDto;
+import com.school.management.model.Student;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,14 +15,14 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class StudentServiceTest {
-	@Mock
-	List<Long> courseIds;
+    @Mock
+    List<Long> courseIds;
 
-	@Mock
-	List<StudentDto> studentsDto;
+    @Mock
+    List<Student> students;
 
-	@InjectMocks
-	StudentService studentService;
+    @InjectMocks
+    StudentService studentService;
 
 //	@Test
 //	public void moreThanFiveCourses() {
@@ -33,12 +33,12 @@ class StudentServiceTest {
 //		);
 //	}
 
-	@Test
-	public void moreThanFiftyStudentsPerRequest() {
-		when(studentsDto.size()).thenReturn(51);
+    @Test
+    public void moreThanFiftyStudentsPerRequest() {
+        when(students.size()).thenReturn(51);
 
-		Assertions.assertThrows(ResponseStatusException.class, () ->
-			studentService.createStudents(studentsDto)
-		);
-	}
+        Assertions.assertThrows(ResponseStatusException.class, () ->
+                studentService.createStudents(students)
+        );
+    }
 }

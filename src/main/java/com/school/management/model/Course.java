@@ -1,5 +1,6 @@
 package com.school.management.model;
 
+import com.school.management.model.dto.CourseDto;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,4 +20,11 @@ public class Course {
     private String name;
     private Timestamp createdAt;
     private Timestamp updatedAt;
+
+    public Course(CourseDto courseDto) {
+        this.id = courseDto.getId();
+        this.name = courseDto.getName();
+        this.createdAt = courseDto.getCreatedAt();
+        this.updatedAt = courseDto.getUpdatedAt();
+    }
 }

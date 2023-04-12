@@ -1,5 +1,6 @@
 package com.school.management.controller;
 
+import com.school.management.model.Student;
 import com.school.management.model.dto.StudentDto;
 import com.school.management.service.StudentService;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +32,11 @@ public class StudentController {
     @ResponseStatus(HttpStatus.OK)
 //	public List<StudentDto> getStudents(@RequestParam(name = "without-courses") Optional<Boolean> withoutCourses) {
     public List<StudentDto> getStudents() {
-        return studentService.getStudents();
+        return studentService
+                .getStudents()
+                .stream()
+                .map(student -> new StudentDto(student.getId(), student.getName(), student.getAddress(), student.getCreatedAt(), student.getUpdatedAt()))
+                .toList();
     }
 
     /**
@@ -43,7 +48,8 @@ public class StudentController {
     @GetMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.OK)
     public StudentDto getStudent(@PathVariable Long id) {
-        return studentService.getStudent(id);
+        var student = studentService.getStudent(id);
+        return new StudentDto(student);
     }
 
     /**
@@ -62,7 +68,7 @@ public class StudentController {
     @ResponseStatus(HttpStatus.OK)
     public StudentDto updateStudent(@PathVariable Long id, @RequestBody StudentDto studentDto) {
         studentDto.setId(id);
-        return studentService.updateStudent(studentDto);
+        return new StudentDto(studentService.updateStudent(new Student(studentDto)));
     }
 
     /**
@@ -80,7 +86,16 @@ public class StudentController {
     @PostMapping(value = "/")
     @ResponseStatus(HttpStatus.CREATED)
     public List<StudentDto> createStudents(@RequestBody List<StudentDto> studentDtoList) {
-        return studentService.createStudents(studentDtoList);
+        var students = studentDtoList
+                .stream()
+                .map(Student::new)
+                .toList();
+
+        return studentService
+                .createStudents(students)
+                .stream()
+                .map(StudentDto::new)
+                .toList();
     }
 
     /**
