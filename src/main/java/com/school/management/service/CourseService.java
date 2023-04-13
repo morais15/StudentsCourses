@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -25,9 +27,21 @@ public class CourseService {
         return courseRepository.findAll();
     }
 
-    public Course findById(Long id) {
+    public Course getCourse(Long id) {
         return courseRepository
                 .findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Course not found"));
+    }
+
+    public Course updateCourse(Course newCourse) {
+        var course = getCourse(newCourse.getId());
+
+        if (newCourse.getName() != null && !newCourse.getName().isBlank() && !newCourse.getName().equals(course.getName())) {
+            course.setName(newCourse.getName());
+            course.setUpdatedAt(Timestamp.from(Instant.now()));
+            course = courseRepository.save(course);
+        }
+
+        return course;
     }
 }

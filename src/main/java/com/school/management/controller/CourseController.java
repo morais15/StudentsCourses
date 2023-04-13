@@ -1,5 +1,6 @@
 package com.school.management.controller;
 
+import com.school.management.model.Course;
 import com.school.management.model.dto.CourseDto;
 import com.school.management.service.CourseService;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +48,7 @@ public class CourseController {
     @GetMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public CourseDto getCourse(@PathVariable Long id) {
-        return new CourseDto(courseService.findById(id));
+        return new CourseDto(courseService.getCourse(id));
     }
 
     /**
@@ -87,8 +88,10 @@ public class CourseController {
      */
     @PutMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public void updateCourse(@PathVariable Long id) {
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "This endpoint must to be implemented.");
+    public CourseDto updateCourse(@PathVariable Long id, @RequestBody CourseDto courseDto) {
+        courseDto.setId(id);
+
+        return new CourseDto(courseService.updateCourse(new Course(courseDto)));
     }
 
     /**
