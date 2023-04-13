@@ -35,7 +35,7 @@ public class StudentController {
         return studentService
                 .getStudents()
                 .stream()
-                .map(student -> new StudentDto(student.getId(), student.getName(), student.getAddress(), student.getCreatedAt(), student.getUpdatedAt()))
+                .map(StudentDto::new)
                 .toList();
     }
 

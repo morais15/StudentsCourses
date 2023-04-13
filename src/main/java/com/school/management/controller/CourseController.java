@@ -1,5 +1,6 @@
 package com.school.management.controller;
 
+import com.school.management.model.dto.CourseDto;
 import com.school.management.service.CourseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,8 +30,12 @@ public class CourseController {
      */
     @GetMapping(value = "/")
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public void getCourses(@RequestParam(name = "without-students") Optional<Boolean> withoutStudents) {
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "This endpoint must to be implemented.");
+    public List<CourseDto> getCourses(@RequestParam(name = "without-students") Optional<Boolean> withoutStudents) {
+        return courseService
+                .getCourses()
+                .stream()
+                .map(CourseDto::new)
+                .toList();
     }
 
     /**
@@ -43,8 +48,8 @@ public class CourseController {
      */
     @GetMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public void getCourse(@PathVariable Long id) {
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "This endpoint must to be implemented.");
+    public CourseDto getCourse(@PathVariable Long id) {
+        return new CourseDto(courseService.findById(id));
     }
 
     /**
