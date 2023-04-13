@@ -14,7 +14,14 @@ import java.util.List;
 public class CourseService {
     private final CourseRepository courseRepository;
 
-    public List<Course> getCourses() {
+    public List<Course> getCourses(boolean withoutStudents) {
+        if (withoutStudents)
+            return courseRepository
+                    .findAll()
+                    .stream()
+                    .filter(c -> c.getStudents() == null || c.getStudents().isEmpty())
+                    .toList();
+
         return courseRepository.findAll();
     }
 

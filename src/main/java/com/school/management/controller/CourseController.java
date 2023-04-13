@@ -21,7 +21,6 @@ public class CourseController {
      */
 
     /**
-     * TODO
      * <p>
      * HTTP method: GET
      *
@@ -32,14 +31,13 @@ public class CourseController {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public List<CourseDto> getCourses(@RequestParam(name = "without-students") Optional<Boolean> withoutStudents) {
         return courseService
-                .getCourses()
+                .getCourses(withoutStudents.orElse(false))
                 .stream()
                 .map(CourseDto::new)
                 .toList();
     }
 
     /**
-     * TODO
      * <p>
      * HTTP method: GET
      *

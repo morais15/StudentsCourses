@@ -30,10 +30,9 @@ public class StudentController {
      */
     @GetMapping(value = "/")
     @ResponseStatus(HttpStatus.OK)
-//	public List<StudentDto> getStudents(@RequestParam(name = "without-courses") Optional<Boolean> withoutCourses) {
-    public List<StudentDto> getStudents() {
+    public List<StudentDto> getStudents(@RequestParam(name = "without-courses") Optional<Boolean> withoutCourses) {
         return studentService
-                .getStudents()
+                .getStudents(withoutCourses.orElse(false))
                 .stream()
                 .map(StudentDto::new)
                 .toList();
