@@ -20,13 +20,14 @@ public class Course {
     private String name;
     private Timestamp createdAt;
     private Timestamp updatedAt;
-    @ManyToMany(fetch = FetchType.LAZY)
-    private Set<Student> students;
+    @OneToMany
+    private Set<StudentCourse> students;
 
     public Course(CourseDto courseDto) {
         this.id = courseDto.getId();
         this.name = courseDto.getName();
         this.createdAt = courseDto.getCreatedAt();
         this.updatedAt = courseDto.getUpdatedAt();
+        this.students = courseDto.getStudents();
     }
 }

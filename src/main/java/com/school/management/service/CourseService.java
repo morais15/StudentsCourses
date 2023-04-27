@@ -2,6 +2,7 @@ package com.school.management.service;
 
 import com.school.management.model.Course;
 import com.school.management.model.Student;
+import com.school.management.model.StudentCourse;
 import com.school.management.repository.CourseRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -11,7 +12,6 @@ import org.springframework.web.server.ResponseStatusException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
-import java.util.Set;
 
 @Service
 @AllArgsConstructor
@@ -35,8 +35,12 @@ public class CourseService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Course not found"));
     }
 
-    public Set<Student> getStudentsFromCourse(Long id) {
-        return this.getCourse(id).getStudents();
+    public List<Student> getStudentsFromCourse(Long id) {
+        return this.getCourse(id)
+                .getStudents()
+                .stream()
+                .map(StudentCourse::getStudent)
+                .toList();
     }
 
     public Course updateCourse(Course newCourse) {

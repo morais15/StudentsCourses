@@ -1,7 +1,7 @@
 package com.school.management.model.dto;
 
-import com.school.management.model.Course;
 import com.school.management.model.Student;
+import com.school.management.model.StudentCourse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,7 +18,7 @@ public class StudentDto {
     private String address;
     private Timestamp createdAt;
     private Timestamp updatedAt;
-    private Set<Course> courses;
+    private Set<StudentCourse> courses;
 
     public StudentDto(Student student) {
         this.id = student.getId();
