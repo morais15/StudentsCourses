@@ -1,13 +1,15 @@
 package com.school.management.model;
 
 import com.school.management.model.dto.StudentDto;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
-import java.util.Set;
 
 @Entity
 @Data
@@ -21,8 +23,6 @@ public class Student {
     private String address;
     private Timestamp createdAt;
     private Timestamp updatedAt;
-    @OneToMany
-    private Set<StudentCourse> courses;
 
     public Student(StudentDto studentDto) {
         this.id = studentDto.getId();
@@ -30,6 +30,5 @@ public class Student {
         this.address = studentDto.getAddress();
         this.createdAt = studentDto.getCreatedAt();
         this.updatedAt = studentDto.getUpdatedAt();
-        this.courses = studentDto.getCourses();
     }
 }

@@ -1,13 +1,11 @@
 package com.school.management.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 public class StudentCourse {
     @Id
@@ -17,4 +15,9 @@ public class StudentCourse {
     private Student student;
     @ManyToOne
     private Course course;
+
+    public StudentCourse(Student student, Course course) {
+        this.student = student;
+        this.course = course;
+    }
 }

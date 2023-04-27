@@ -1,9 +1,11 @@
 package com.school.management.controller;
 
 import com.school.management.model.Course;
+import com.school.management.model.StudentCourse;
 import com.school.management.model.dto.CourseDto;
 import com.school.management.model.dto.StudentDto;
 import com.school.management.service.CourseService;
+import com.school.management.service.StudentCourseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +19,7 @@ import java.util.Optional;
 @RequestMapping("/courses")
 public class CourseController {
     private final CourseService courseService;
+    private final StudentCourseService studentCourseService;
 
     /**
      * GET methods (retrieving info)
@@ -29,11 +32,16 @@ public class CourseController {
      * @param withoutStudents = true --> return the list of courses without any student (default: false).
      * @return the list of courses.
      */
-    @GetMapping(value = "/")
+    @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<CourseDto> getCourses(@RequestParam(name = "without-students") Optional<Boolean> withoutStudents) {
-        return courseService
-                .getCourses(withoutStudents.orElse(false))
+        List<Course> courses;
+        if (withoutStudents.isPresent())
+            courses = studentCourseService.getCoursesWithoutStudents();
+        else
+            courses = courseService.getCourses();
+
+        return courses
                 .stream()
                 .map(CourseDto::new)
                 .toList();
@@ -62,7 +70,7 @@ public class CourseController {
     @GetMapping(value = "/{id}/students")
     @ResponseStatus(HttpStatus.OK)
     public List<StudentDto> getStudentsFromCourse(@PathVariable Long id) {
-        return courseService
+        return studentCourseService
                 .getStudentsFromCourse(id)
                 .stream()
                 .map(StudentDto::new)
@@ -98,7 +106,6 @@ public class CourseController {
     }
 
     /**
-     * TODO
      * <p>
      * HTTP method: PUT
      *
@@ -108,9 +115,9 @@ public class CourseController {
      * @return a list containing the course id and the enrolled students.
      */
     @PutMapping(value = "/{id}/students")
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public void updateCourseStudents(@PathVariable Long id, @RequestBody List<Long> studentIds) {
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "This endpoint must to be implemented.");
+    @ResponseStatus(HttpStatus.OK)
+    public List<StudentCourse> updateCourseStudents(@PathVariable Long id, @RequestBody List<Long> studentIds) {
+        return studentCourseService.updateCourseStudents(id, studentIds);
     }
 
     /**
@@ -126,7 +133,7 @@ public class CourseController {
      *                      Ex: [{"name": "Algebra"}, {"name": "Calculus"}]
      * @return a list of the courses that were created with the submitted request.
      */
-    @PostMapping(value = "/")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public List<CourseDto> createCourses(@RequestBody List<CourseDto> courseDtoList) {
         var courseList = courseDtoList
@@ -151,7 +158,7 @@ public class CourseController {
      * @param confirmDeletion = true --> deletes all the courses, and student-courses relations.
      *                        The student table will not be modified.  (default: false)
      */
-    @DeleteMapping(value = "/")
+    @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCourses(@RequestParam(name = "confirm-deletion") Optional<Boolean> confirmDeletion) {
         courseService.deleteAllCourses(confirmDeletion.orElse(false));

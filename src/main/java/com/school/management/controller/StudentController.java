@@ -1,12 +1,14 @@
 package com.school.management.controller;
 
+import com.school.management.model.Course;
 import com.school.management.model.Student;
+import com.school.management.model.StudentCourse;
 import com.school.management.model.dto.StudentDto;
+import com.school.management.service.StudentCourseService;
 import com.school.management.service.StudentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +18,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class StudentController {
     private final StudentService studentService;
+    private final StudentCourseService studentCourseService;
 
     /**
      * GET methods (retrieving info)
@@ -28,11 +31,16 @@ public class StudentController {
      *
      * @return the list of students.
      */
-    @GetMapping(value = "/")
+    @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<StudentDto> getStudents(@RequestParam(name = "without-courses") Optional<Boolean> withoutCourses) {
-        return studentService
-                .getStudents(withoutCourses.orElse(false))
+        List<Student> students;
+        if (withoutCourses.isPresent())
+            students = studentCourseService.getStudentsWithOutCourses();
+        else
+            students = studentService.getStudents();
+
+        return students
                 .stream()
                 .map(StudentDto::new)
                 .toList();
@@ -82,7 +90,7 @@ public class StudentController {
      *                       {"name": "Jane Doe", "address": "Another address"}]
      * @return a list of the students that were registered with the submitted request.
      */
-    @PostMapping(value = "/")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public List<StudentDto> createStudents(@RequestBody List<StudentDto> studentDtoList) {
         var students = studentDtoList
@@ -107,7 +115,7 @@ public class StudentController {
      * @param confirmDeletion = true --> deletes all the students, and student-courses relationships.
      *                        The course table will not be modified.  (default: false)
      */
-    @DeleteMapping(value = "/")
+    @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteStudents(@RequestParam(name = "confirm-deletion") Optional<Boolean> confirmDeletion) {
         studentService.deleteAllStudents(confirmDeletion.orElse(false));
@@ -127,42 +135,33 @@ public class StudentController {
     }
 
     /**
-     *
-     * TODO methods
-     *
-     */
-
-    /**
      * HTTP method: GET
      * <p>
-     * TODO
      *
      * @param id = the student id.
      * @return list of courses the student is enrolled.
      */
     @GetMapping(value = "/{id}/courses")
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public void getCoursesFromStudent(@PathVariable Long id) {
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "This endpoint must to be implemented.");
+    @ResponseStatus(HttpStatus.OK)
+    public List<Course> getCoursesFromStudent(@PathVariable Long id) {
+        return studentCourseService.getCoursesFromStudent(id);
     }
 
     /**
      * HTTP method: GET
      * <p>
-     * TODO
      *
      * @return list of relationships between students and courses, ordered by student and course.
      */
     @GetMapping(value = "/courses")
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public void getRelations() {
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "This endpoint must to be implemented.");
+    @ResponseStatus(HttpStatus.OK)
+    public List<StudentCourse> getRelations() {
+        return studentCourseService.findAll();
     }
 
     /**
      * HTTP method: PUT
      * <p>
-     * TODO
      *
      * @param id        = the student id.
      * @param courseIds = the ids of the courses to enroll the student. Limited to 5 courses.
@@ -170,8 +169,8 @@ public class StudentController {
      * @return a list containing the student id and the enrolled courses.
      */
     @PutMapping(value = "/{id}/courses")
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public void updateStudentCourses(@PathVariable Long id, @RequestBody List<Long> courseIds) {
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "This endpoint must to be implemented.");
+    @ResponseStatus(HttpStatus.OK)
+    public List<StudentCourse> updateStudentCourses(@PathVariable Long id, @RequestBody List<Long> courseIds) {
+        return studentCourseService.updateStudentCourses(id, courseIds);
     }
 }

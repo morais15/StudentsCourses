@@ -18,16 +18,8 @@ import java.util.List;
 public class StudentService {
     private final StudentRepository studentRepository;
 
-    public List<Student> getStudents(boolean withoutStudents) {
-        if (withoutStudents)
-            return studentRepository
-                    .findAll()
-                    .stream()
-                    .filter(s -> s.getCourses() == null || s.getCourses().isEmpty())
-                    .toList();
-
-        return studentRepository
-                .findAll();
+    public List<Student> getStudents() {
+        return studentRepository.findAll();
     }
 
     public Student getStudent(Long id) {
@@ -95,7 +87,5 @@ public class StudentService {
                     HttpStatus.NOT_FOUND,
                     "To delete the student and student-courses relationships, inform confirm-deletion=true as a query param.");
         }
-
-
     }
 }
